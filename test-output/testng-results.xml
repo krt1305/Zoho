@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results skipped="0" failed="0" ignored="0" total="1" passed="1">
+  <reporter-output>
+  </reporter-output>
+  <suite name="Default suite" duration-ms="44" started-at="2017-04-16T13:16:13Z" finished-at="2017-04-16T13:16:13Z">
+    <groups>
+    </groups>
+    <test name="Default test" duration-ms="44" started-at="2017-04-16T13:16:13Z" finished-at="2017-04-16T13:16:13Z">
+      <class name="com.project.zoho.testcases.DummyTestA">
+        <test-method status="PASS" signature="test()[pri:0, instance:com.project.zoho.testcases.DummyTestA@b3ca52e]" name="test" duration-ms="24" started-at="2017-04-16T06:16:13Z" finished-at="2017-04-16T06:16:13Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test -->
+      </class> <!-- com.project.zoho.testcases.DummyTestA -->
+    </test> <!-- Default test -->
+  </suite> <!-- Default suite -->
+</testng-results>
