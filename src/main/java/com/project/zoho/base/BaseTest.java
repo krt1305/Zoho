@@ -1,36 +1,48 @@
 package com.project.zoho.base;
+import com.project.zoho.util.ExtentManager;
 import com.project.zoho.util.Xls_Reader;
+import com.relevantcodes.extentreports.ExtentReports;
+import com.relevantcodes.extentreports.ExtentTest;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.testng.asserts.SoftAssert;
 
 public class BaseTest {
 
-	WebDriver driver=null;
-	Properties prop=null;
-	Xls_Reader xls=new Xls_Reader("/Users/rabia/Desktop/testing.xlsx");
+	public WebDriver driver=null;
+	public static Properties prop=null;
+	public SoftAssert softassert;
+	public Xls_Reader xls=new Xls_Reader("/Users/rabia/Desktop/zoho.xlsx");
+//	public ExtentReports rep=ExtentManager.getInstance();
+//	public ExtentTest test;
 	
 	public void init() throws IOException
 	{
 		if(prop==null)
 		{
 			try 
-			{
-				
+			{				
 				prop=new Properties();
 				FileInputStream fs=new FileInputStream(System.getProperty("user.dir")+"/OR.properties");
+				//	System.out.println(System.getProperty("user.dir")+"/OR.properties");
 				prop.load(fs);
+				System.out.println(prop.getProperty("URL"));
 			} 
 			catch (FileNotFoundException e) 
 			{
@@ -38,21 +50,101 @@ public class BaseTest {
 				e.printStackTrace();
 			}
 		}
-		System.out.println(prop.getProperty("url"));
+		System.out.println("FInished inti function");
+		
+	}
+	
+	public boolean doLogin(String username,String password) throws InterruptedException
+	{
+		System.out.println("In login function");
+		System.out.println("Username is" + username);
+		System.out.println("Password is "+password);
+		driver.get("http://www.zoho.com");
+		driver.findElement(By.xpath(prop.getProperty("signInLink"))).click();
+		wait(1);
+		waitforPagetoLoad();
+		driver.switchTo().frame(driver.findElement(By.id("zohoiam")));
+		driver.findElement(By.xpath(prop.getProperty("emailID"))).sendKeys(username);
+		driver.findElement(By.xpath(prop.getProperty("passwordField"))).sendKeys(password);
+		driver.findElement(By.xpath(prop.getProperty("signInSubmit"))).click();		
+		wait(20);
+		driver.switchTo().defaultContent();
+		if(isElementpresent(prop.getProperty("profilePic")))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
+		
+	}
+	
+	public void wait(int timetoWaitinSec)
+	{
+		try {
+			Thread.sleep(timetoWaitinSec*1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void clickOnLead(String leadName)
+	{
+		int row=getLeadRowNum(leadName);
+		driver.findElement(By.xpath(prop.getProperty("leadPart1_xpath")+row+prop.getProperty("leadPart2_xpath")));
+		
+	}
+	
+	public int getLeadRowNum(String leadName)
+	{
+		List <WebElement> leadNames=driver.findElements(By.xpath(prop.getProperty("leadNamesCol_xpath")));
+		for(int i=0;i<=leadNames.size();i++)
+		{
+			
+			System.out.println(leadNames.get(i).getText());
+			if(leadNames.get(i).getText().equals(leadName))
+				return (i+1);
+		}
+		return -1;
+		
+	}
+	
+	
+	public void waitforPagetoLoad() throws InterruptedException
+	{
+		JavascriptExecutor js=(JavascriptExecutor)driver;
+		String state=(String)js.executeScript("return document.readyState");
+		while(!state.equals("complete"))
+		{
+			Thread.sleep(5000);
+			state=(String)js.executeScript("return document.readyState");
+			
+		}
+		
 	}
 	
 	public void openBrowser(String browser) throws IOException
 	{
-		
-		
-		if(browser.equalsIgnoreCase("firefox"))
+			
+	/*	if(browser.equalsIgnoreCase("firefox"))
 		{
 			System.setProperty("webdriver.gecko.driver", "/Users/rabia/Desktop/geckodriver");
 			driver=new FirefoxDriver();
 		}
+		*/
+			if(browser.equalsIgnoreCase("firefox"))
+		{
+			System.setProperty("webdriver.gecko.driver", "/Users/rabia/Desktop/geckodriver");
+			driver=new FirefoxDriver();
+		}
+	
+		
 		else if(browser.equalsIgnoreCase("chrome"))
 		{
-			System.setProperty("webdriver.driver.chrome", "/Users/rabia/Desktop/chromedriver.exe");
+			System.setProperty("webdriver.driver.chrome", "/Users/rabia/Desktop/chromedriver");
 			driver=new ChromeDriver();
 						
 		}
@@ -62,7 +154,7 @@ public class BaseTest {
 		}
 		driver.manage().timeouts().pageLoadTimeout(20, TimeUnit.SECONDS);
 		driver.manage().window().maximize();	
-		closeBrowser();
+//		closeBrowser();
 		
 	}
 	
@@ -108,17 +200,19 @@ public class BaseTest {
 		}
 		
 	
-	public boolean isTestCaseRunnable(String testCaseName)
+	public boolean isTestCaseRunnable(String suiteSheetName,String testCaseName)
 	{
-		int rows=xls.getRowCount("TestCases");
-		int cols=xls.getColumnCount("TestCases");	
+		
+		int rows=xls.getRowCount(suiteSheetName);
+		int cols=xls.getColumnCount(suiteSheetName);	
 		for(int c=0;c<=cols;c++)
 		{
 			for(int r=1;r<=rows;r++)
 			{
-				if(xls.getCellData("TestCases", "TCID", r).equalsIgnoreCase(testCaseName))
+				System.out.println("ROw data is "+xls.getCellData(suiteSheetName, "TCID", r));
+				if(xls.getCellData(suiteSheetName, "TCID", r).equalsIgnoreCase(testCaseName))
 				{
-					String runmode=xls.getCellData("TestCases", "Runmode", r);
+					String runmode=xls.getCellData(suiteSheetName, "Runmode", r);
 					System.out.println("Runmode is"+runmode);
 					if(runmode.equalsIgnoreCase("Y"))
 						return true;
@@ -198,6 +292,18 @@ public class BaseTest {
 		 
 		
 	 }
+	
+	public boolean isElementpresent(String xpath)
+	{
+		System.out.println("In is element present function");
+		List <WebElement> elem=driver.findElements(By.xpath(xpath));
+		System.out.println("Element size in iselement present is"+elem.size());
+		if(elem.size() >0)
+			return true;
+		else
+		    return false;
+		
+	}
 		
 	
 

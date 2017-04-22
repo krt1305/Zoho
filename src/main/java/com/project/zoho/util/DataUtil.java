@@ -8,18 +8,23 @@ public class DataUtil
 	public static Object[][] getTestData(Xls_Reader xls,String caseName)
 	{
 	
+	 System.out.println("In get test data");
    	 int rowNum = 0,rowStart,dataStart;
+   	 System.out.println("Test case name is"+caseName);
 		while(true)
 		{
+		//	System.out.println("In while");
 			rowNum=rowNum+1;
+		//	System.out.println("Row number is "+rowNum);
 			if(xls.getCellData("Data", 0, rowNum).equalsIgnoreCase(caseName))
 			{
-				
+			//	System.out.println(xls.getCellData("Data", 0, rowNum));
 				rowStart=rowNum;
 				System.out.println("Row start number is "+rowStart);
 				break;
 				
-			}				
+			}
+			
 				
 		}
 
@@ -60,7 +65,9 @@ public class DataUtil
 			dataRow++;
 		}
 		return data;
+
 		
 	}
 	
 }
+
