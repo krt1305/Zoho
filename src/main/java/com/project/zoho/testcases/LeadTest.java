@@ -19,7 +19,7 @@ import com.project.zoho.util.Xls_Reader;
 public class LeadTest extends BaseTest {
 	
 	Xls_Reader xls=new Xls_Reader("/Users/rabia/Desktop/zoho.xlsx");
-	String testCaseName="CreateLeadTest";
+	String testCaseName;
 	String suiteSheetName="TestCases";
 	String sheetName;
 
@@ -33,6 +33,7 @@ public class LeadTest extends BaseTest {
 	@Test(priority=1,dataProvider="getData")
 	public void createLeadTest(Hashtable <String,String> data) throws IOException, InterruptedException
 	{
+		testCaseName="CreateLeadTest";
 		System.out.println("Data from hashtable is"+data.get("LeadCompany"));
 		if(isTestCaseRunnable(suiteSheetName,testCaseName))
 		{
@@ -64,7 +65,7 @@ public class LeadTest extends BaseTest {
 	}
 	
 	
-	@Test(priority=2,dataProvider="getData")
+/*	@Test(priority=2,dataProvider="getData")
 	public void convertLeadTest(Hashtable <String,String> data) throws IOException, InterruptedException
 	{
 		if(isTestCaseRunnable(suiteSheetName,testCaseName))
@@ -93,12 +94,39 @@ public class LeadTest extends BaseTest {
 	}
 	
 	@Test(priority=3,dataProvider="getData")
-	public void deleteLeadAccountTest(Hashtable <String,String> data)
+	public void deleteLeadAccountTest(Hashtable <String,String> data) throws IOException, InterruptedException
 	{
+		testCaseName="DeleteLeadAccountTest";
+		if(isTestCaseRunnable(suiteSheetName,testCaseName))
+		{
+			if(data.get("Runmode").equals("N"))
+   	    	{
+   	    		System.out.println("Skiping the test "+testCaseName);
+   	    		throw new SkipException("Skipping the test as runmode is N");
+   	    	}
+   	 	}
+   	 	else
+   	 	{
+   	 		throw new SkipException("Skipping test case "+testCaseName +" as run mode is No");
+   	 	}
+		openBrowser("Firefox");
+		doLogin(prop.getProperty("username"), prop.getProperty("password"));
+		driver.findElement(By.xpath(prop.getProperty("crmIcon"))).click();
+		waitforPagetoLoad();
+		wait(20);
+		driver.findElement(By.xpath(prop.getProperty("leadsTab"))).click();
+		clickOnLead(data.get("LeadLastName"));
+		driver.findElement(By.xpath(prop.getProperty("deleteMenu"))).click();
+		driver.findElement(By.xpath(prop.getProperty("deleteMenuOption"))).click();
+		acceptAlert();
+		
+		int rnum=getLeadRowNum(data.get("LeadLastName"));
+		if(rnum==-1)
+			System.out.println("NO lead found with name"+data.get("LeadLastName"));
 		
 	}
 	
-	
+	*/
 	
 	@AfterMethod
 	public void quit()
@@ -117,4 +145,14 @@ public class LeadTest extends BaseTest {
 		return DataUtil.getTestData(xls, testCaseName);
 		
 	}
+	
+	/*@DataProvider
+	public Object[][] deleteLeadData() throws IOException
+	{
+		super.init();
+		return DataUtil.getTestData(xls, "DeleteLeadAccountTest");
+		
+	}
+	*/
+	
 }

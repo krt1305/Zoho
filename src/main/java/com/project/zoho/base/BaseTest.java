@@ -8,6 +8,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +24,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.asserts.SoftAssert;
 
 public class BaseTest {
@@ -98,6 +103,14 @@ public class BaseTest {
 		
 	}
 	
+	public void acceptAlert()
+	{
+		WebDriverWait wait=new WebDriverWait(driver,5);
+		wait.until(ExpectedConditions.alertIsPresent());
+		driver.switchTo().alert().accept();
+		driver.switchTo().defaultContent();
+	}
+	
 	public int getLeadRowNum(String leadName)
 	{
 		List <WebElement> leadNames=driver.findElements(By.xpath(prop.getProperty("leadNamesCol_xpath")));
@@ -109,6 +122,41 @@ public class BaseTest {
 				return (i+1);
 		}
 		return -1;
+		
+	}
+	
+	public void selectDate(String d) throws ParseException
+	{
+		driver.findElement(By.xpath(prop.getProperty("dealClosingDate"))).click();
+		Date currentDate=new Date();
+		//compare current date and date to be selected 
+		SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy");
+		Date dateTobeSelected=sdf.parse(d);
+		sdf=new SimpleDateFormat("MMMM");
+		String monthToBeSelected=sdf.format(dateTobeSelected);
+		sdf=new SimpleDateFormat("yyyy");
+		String yearToBeSelected=sdf.format(dateTobeSelected);
+		sdf=new SimpleDateFormat("d");
+		String dayToBeSelected=sdf.format(dateTobeSelected);
+		String monthYearToBeselected=monthToBeSelected+" "+yearToBeSelected;
+		String getSelectedDate=driver.findElement(By.xpath(prop.getProperty("monthYearInfo"))).getText();
+		while(true)
+		{
+			if(currentDate.compareTo(dateTobeSelected)==1)
+			{
+				driver.findElement(By.xpath(prop.getProperty("calenderFrontButton"))).click();
+			}
+			else if(currentDate.compareTo(dateTobeSelected)==-1)
+			{
+				driver.findElement(By.xpath(prop.getProperty("calenderBackButton"))).click();
+			
+			}
+			if(monthYearToBeselected.equals(getSelectedDate))
+			{
+				break;
+			}
+		}
+		driver.findElement(By.xpath("//td[text()='"+dayToBeSelected+"']")).click();
 		
 	}
 	

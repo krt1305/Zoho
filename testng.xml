@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="Suite">
-  <test name="Test">
+  <test name="Login Test">
     <classes>
-      <class name="selenium_practise.Jenkins_demo"/>
+      <class name="com.project.zoho.testcases.LoginTest"/>
     </classes>
   </test> <!-- Test -->
+  
+  <test name="Lead Test">
+    <classes>
+      <class name="com.project.zoho.testcases.LeadTest"/>
+    </classes>
+  </test> <!-- Test -->
+  
+  <test name="Potential Test">
+    <classes>
+      <class name="com.project.zoho.testcases.PotentialTest"/>
+    </classes>
+  </test> <!-- Test -->
+  
 </suite> <!-- Suite -->
