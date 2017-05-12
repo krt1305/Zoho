@@ -13,7 +13,10 @@ import org.testng.asserts.SoftAssert;
 
 import com.project.zoho.base.BaseTest;
 import com.project.zoho.util.DataUtil;
+import com.project.zoho.util.ExtentManager;
 import com.project.zoho.util.Xls_Reader;
+import com.relevantcodes.extentreports.ExtentReports;
+import com.relevantcodes.extentreports.ExtentTest;
 import com.relevantcodes.extentreports.LogStatus;
 
 public class LoginTest extends BaseTest {
@@ -24,9 +27,14 @@ public class LoginTest extends BaseTest {
 	String suiteSheetName="TestCases";
 	String sheetName;
 	
+	
 	@Test(dataProvider="getData")
 	public void doLoginTest(Hashtable <String,String> data) throws IOException, InterruptedException
 	{
+		logger=extent.startTest("LoginTest");
+		logger.log(LogStatus.INFO, "Starting login test");
+
+		
 		/*if(!isTestCaseRunnable(suiteSheetName,testCaseName) || data.get("Runmode").equalsIgnoreCase("N"))
 		{
 			throw new SkipException("Skipping the test case "+testCaseName+ " as run mode is N");
@@ -42,13 +50,13 @@ public class LoginTest extends BaseTest {
     	 }
     	 else
     	 {
+    		 logger.log(LogStatus.SKIP, "Skipping test case " + testCaseName +" as run mode is NO");
     		 throw new SkipException("Skipping test case "+testCaseName +" as run mode is No");
+    	     
     	 }
     	 	 
 		
 		openBrowser(data.get("Browser"));
-	//	driver.get("https://www.zoho.com");
-	//	driver.get(prop.getProperty("URL"));
 		driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);	
 		boolean actualResult=doLogin(data.get("Username"),data.get("Password"));
 		boolean expectedResult=false;
@@ -62,14 +70,17 @@ public class LoginTest extends BaseTest {
 		if(expectedResult!=actualResult)
 		{
 			System.out.println("Login test failed");
-		//	test.log(LogStatus.INFO,"Login Failed");
+			reportFailure("Login Test failed");
+			logger.log(LogStatus.FAIL,"Login Failed");
+			
 		
 		}
 			
 		else
 		{
 			System.out.println("Login test passed");
-		//	test.log(LogStatus.INFO,"Login passed");
+			reportPass("Login test Passed");
+			logger.log(LogStatus.PASS,"Login passed");
 
 		}
 		    
@@ -88,15 +99,26 @@ public class LoginTest extends BaseTest {
 	@AfterMethod
 	public void quit()
 	{
-		softassert.assertAll();
+		try
+		{
+			softassert.assertAll();
+		}
+		catch(Error e)
+		{
+			logger.log(LogStatus.FAIL, e.getMessage());
+		}
+
 		if(driver!=null)
 		{
 			driver.quit();
 		}
+		extent.endTest(logger);
+		extent.flush();
+		
 	}
 	
 	
-	@DataProvider
+	@DataProvider()
 	public Object[][] getData() throws IOException
 	{
 		

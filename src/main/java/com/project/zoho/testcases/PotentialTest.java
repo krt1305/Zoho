@@ -16,14 +16,14 @@ import com.project.zoho.util.Xls_Reader;
 public class PotentialTest extends BaseTest
 {
 	Xls_Reader xls=new Xls_Reader("/Users/rabia/Desktop/zoho.xlsx");
-	String testCaseName;
+	String testCaseName="CreatePotentialTest";
 	String suiteSheetName="TestCases";
 	String sheetName;
 	
 	@Test(priority=1,dataProvider="getData")
 	public void createDeal(Hashtable <String,String> data) throws IOException, InterruptedException, ParseException
 	{
-		testCaseName="CreatePotentialTest";
+	
 		if(isTestCaseRunnable(suiteSheetName,testCaseName))
 		{
 			if(data.get("Runmode").equals("N"))

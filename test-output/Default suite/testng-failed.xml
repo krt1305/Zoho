@@ -6,10 +6,10 @@
       <class name="com.project.zoho.testcases.LeadTest">
         <methods>
           <include name="quit"/>
-          <include name="createLeadTest" invocation-numbers="0 1"/>
-          <include name="deleteLeadAccountTest"/>
+          <include name="createLeadTest" invocation-numbers="1"/>
+          <include name="deleteLeadAccountTest" invocation-numbers="0 1"/>
           <include name="init"/>
-          <include name="convertLeadTest"/>
+          <include name="convertLeadTest" invocation-numbers="0 1"/>
         </methods>
       </class> <!-- com.project.zoho.testcases.LeadTest -->
     </classes>
